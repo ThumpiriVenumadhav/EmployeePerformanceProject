@@ -1,0 +1,7 @@
+# Ignore node_modules (Important for React)
+frontend/node_modules/
+frontend/build/
+
+# Ignore other unnecessary files
+.DS_Store
+*.log
