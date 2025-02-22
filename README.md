@@ -58,6 +58,7 @@ EmployeePerformanceProject/
 │   │   ├── service/       # Business Logic
 │   │   ├── repository/    # Database Interactions
 │   │   ├── entity/        # Database Models
+|   |   |-- config         # CORS file
 │── frontend/              # React Frontend
 │   ├── src/components/    # UI Components
 │   │   ├── EmployeeList.js
