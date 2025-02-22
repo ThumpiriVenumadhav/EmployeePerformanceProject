@@ -1,5 +1,6 @@
 package com.estuate.employeeperformance.service;
 
+import com.estuate.employeeperformance.entity.Appraisal;
 import com.estuate.employeeperformance.entity.Employee;
 import com.estuate.employeeperformance.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -19,7 +21,7 @@ public class EmployeeService {
 
     @Cacheable(value = "employees")
     public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+        return employeeRepository.findAllWithAppraisal();
     }
 
     @Cacheable(value = "employees")
@@ -34,14 +36,35 @@ public class EmployeeService {
     }
     
     
-    public Employee updateEmployee(int id, Employee employeeDetails) {
-        employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+    public Employee updateEmployee(Integer id, Map<String, String> updates) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isPresent()) {
+            Employee employee = optionalEmployee.get();
 
-        employee.setEmployeeName(employeeDetails.getEmployeeName());
-        return employeeRepository.save(employee);
+            // Update Name if provided
+            if (updates.containsKey("employeeName")) {
+                employee.setEmployeeName(updates.get("employeeName"));
+            }
+
+            // Update or Insert Rating in Appraisal
+            if (updates.containsKey("rating")) {
+                String newRating = updates.get("rating");
+                if (employee.getAppraisal() == null) {
+                    Appraisal newAppraisal = new Appraisal();
+                    newAppraisal.setEmployee(employee);
+                    newAppraisal.setRating(newRating);
+                    employee.setAppraisal(newAppraisal);
+                } else {
+                    employee.getAppraisal().setRating(newRating);
+                }
+            }
+
+            return employeeRepository.save(employee);
+        }
+        return null; // Return null if employee not found
     }
-
+    
+    
     @CacheEvict(value = "employees" , allEntries = true)
     public void deleteEmployee(int id) {
     	

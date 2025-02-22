@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/employees")
@@ -21,12 +22,14 @@ public class EmployeeController {
         return employeeService.getAllEmployees();
     }
 
+    
     // Get employee by ID
     @GetMapping("/{id}")
     public Employee getEmployeeById(@PathVariable int id) {
         return employeeService.getEmployeeById(id);
     }
 
+    
     // Add new employee
     @PostMapping
     public Employee addEmployee(@RequestBody Employee employee) {
@@ -34,11 +37,17 @@ public class EmployeeController {
     }
     
     
+    
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @RequestBody Employee employeeDetails) {
-        Employee updatedEmployee = employeeService.updateEmployee(id, employeeDetails);
-        return ResponseEntity.ok(updatedEmployee);
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Integer id, @RequestBody Map<String, String> updates) {
+        Employee updatedEmployee = employeeService.updateEmployee(id, updates);
+        if (updatedEmployee != null) {
+            return ResponseEntity.ok(updatedEmployee);
+        }
+        return ResponseEntity.notFound().build();
     }
+    
+    
 
     // Delete employee by ID
     @DeleteMapping("/{id}")

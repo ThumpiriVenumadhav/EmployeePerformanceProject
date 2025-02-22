@@ -1,6 +1,15 @@
 package com.estuate.employeeperformance.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Appraisal")
@@ -10,12 +19,15 @@ public class Appraisal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int appraisalId;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
-
+   
     @Column(nullable = false, length = 1)
     private String rating; 
+    
+    
+    @OneToOne
+    @JoinColumn(name = "employee_id")
+    @JsonBackReference
+    private Employee employee;
 
     
     public Appraisal() {
